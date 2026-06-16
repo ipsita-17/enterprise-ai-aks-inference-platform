@@ -28,6 +28,10 @@ jobs:
       run: |
         pip install -r model/training/requirements.txt
 
+    - name: Run Tests
+      run: |
+        pytest
+
     - name: Train Model
       run: |
         python model/training/train.py
