@@ -10,37 +10,70 @@ on:
       - main
 
 jobs:
-  build-test:
 
+  test:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Checkout Code
-      uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
+      - name: Install Dependencies
+        run: |
+          pip install -r model/training/requirements.txt
 
-    - name: Install Dependencies
-      run: |
-        pip install -r model/training/requirements.txt
+      - name: Run Tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          pytest
 
-    - name: Run Tests
-      run: |
-        pytest
+  sonar:
+    needs: test
+    runs-on: ubuntu-latest
 
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarqube-scan-action@v5
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Train Model
-      run: |
-        python model/training/train.py
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-    - name: Build Docker Image
-      run: |
-        docker build -t ai-inference-api:v1 .
+  train:
+    needs: sonar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r model/training/requirements.txt
+
+      - name: Train Model
+        run: |
+          python model/training/train.py
+
+  docker:
+    needs: train
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ai-inference-api:v1 .
