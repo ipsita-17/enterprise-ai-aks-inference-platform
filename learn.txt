@@ -1,0 +1,281 @@
+Phase: 1
+
+model/
+
+Contains ML stuff.
+
+training/
+
+Model creation.
+
+artifacts/
+
+Stores trained models.
+
+api/
+
+Contains FastAPI service.
+
+kubernetes/
+
+All K8s manifests.
+
+helm/
+
+Helm charts.
+
+STEP 3
+
+Create:
+
+model/training/requirements.txt
+
+Add:
+
+pandas
+scikit-learn
+joblib
+
+
+
+pandas
+
+Data manipulation.
+
+scikit-learn
+
+Machine learning library.
+
+joblib
+
+Used to save models.
+
+What is a model?
+
+Imagine:
+
+Input:
+
+{
+  "age": 35,
+  "income": 50000
+}
+
+Output:
+
+{
+  "prediction": "Will Churn"
+}
+
+The trained model learns patterns.
+
+The trained model becomes:
+
+model.joblib
+
+Later:
+
+FastAPI
+ ↓
+loads model.joblib
+ ↓
+returns prediction
+
+
+Perfect! ✅
+
+Now everything required for the ML part is installed successfully.
+
+✓ pandas 3.0.3
+✓ scikit-learn 1.9.0
+✓ joblib 1.5.3
+✓ numpy
+✓ scipy
+
+We can officially start Project 2 now.
+
+What are we building?
+Enterprise AI Inference Platform on AKS
+
+By the end you'll know:
+
+Python
+ML model training
+FastAPI
+API development
+Unit testing
+Docker
+Containerization
+Multi-stage builds
+Image optimization
+Kubernetes
+Deployments
+Services
+ConfigMaps
+Secrets
+HPA
+Ingress
+Helm
+Charts
+Templates
+Values
+Reusable deployments
+GitHub Actions
+CI pipeline
+Docker build
+Security scan
+Helm validation
+Azure AKS
+Cluster creation
+ACR integration
+Workload deployment
+MLOps (Beginner → Intermediate)
+Train model
+Save artifact
+Serve model
+CI/CD for model deployment
+Phase 1: Train Our First ML Model
+
+Create:
+
+model/training/train.py
+
+Paste:
+
+from sklearn.datasets import load_iris
+from sklearn.ensemble import RandomForestClassifier
+import joblib
+import os
+
+# Load dataset
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+
+# Train model
+model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+
+model.fit(X, y)
+
+# Create artifacts folder
+os.makedirs("model/artifacts", exist_ok=True)
+
+# Save model
+joblib.dump(
+    model,
+    "model/artifacts/model.pkl"
+)
+
+print("Model trained successfully")
+print("Artifact saved: model/artifacts/model.pkl")
+Learn Before Running
+What is Iris Dataset?
+
+A built-in ML dataset.
+
+It contains:
+
+Flower measurements
+
+and predicts:
+
+Flower species
+What is X?
+
+Features/Input
+
+Sepal Length
+Sepal Width
+Petal Length
+Petal Width
+What is y?
+
+Output/Label
+
+Setosa
+Versicolor
+Virginica
+What does fit() do?
+
+This is the actual training step.
+
+model.fit(X, y)
+
+The algorithm learns patterns from data.
+
+What is model.pkl?
+
+A serialized model file.
+
+Think of it as:
+
+Trained Brain of the AI
+
+Later:
+
+FastAPI
+↓
+loads model.pkl
+↓
+predicts results
+
+
+Phase: 2
+
+What are we learning?
+FastAPI
+
+FastAPI is a Python framework for creating APIs.
+
+Example:
+
+Bank App
+Mobile App
+Frontend
+     ↓
+API
+     ↓
+Database
+
+The API is the middle layer.
+
+What is this?
+app = FastAPI()
+
+Creates the API application.
+
+What is @app.get("/") ?
+@app.get("/")
+
+Creates an endpoint.
+
+If someone visits:
+
+http://localhost:8000/
+
+they get:
+
+{
+  "status": "healthy",
+  "service": "AI Inference API"
+}
+
+Pydantic
+class IrisRequest(BaseModel):
+
+Defines the input schema.
+
+The API now expects:
+
+{
+  "sepal_length": 5.1,
+  "sepal_width": 3.5,
+  "petal_length": 1.4,
+  "petal_width": 0.2
+}
+
+This is how production APIs validate requests.
