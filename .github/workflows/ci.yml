@@ -32,14 +32,14 @@ jobs:
       run: |
         pytest
 
-    - name: Train Model
-      run: |
-        python model/training/train.py
-
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@v5
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Train Model
+      run: |
+        python model/training/train.py
 
     - name: Build Docker Image
       run: |
