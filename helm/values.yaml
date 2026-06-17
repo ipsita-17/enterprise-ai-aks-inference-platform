@@ -1,9 +1,9 @@
 replicaCount: 2
 
 image:
-  repository: ipsitaacr.azurecr.io/ai-inference-api
-  tag: latest
-  pullPolicy: Always
+  repository: ai-inference-api
+  tag: v1
+  pullPolicy: IfNotPresent
 
 service:
   type: LoadBalancer

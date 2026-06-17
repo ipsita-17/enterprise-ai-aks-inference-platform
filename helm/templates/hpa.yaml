@@ -3,7 +3,6 @@ kind: HorizontalPodAutoscaler
 
 metadata:
   name: ai-api-hpa
-  namespace: ai-platform
 
 spec:
   scaleTargetRef:
@@ -12,14 +11,12 @@ spec:
     name: ai-inference-api
 
   minReplicas: 2
-  maxReplicas: 10
+  maxReplicas: 5
 
   metrics:
-  - type: Resource
-
-    resource:
-      name: cpu
-
-      target:
-        type: Utilization
-        averageUtilization: 70
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
