@@ -1,5 +1,6 @@
 import mlflow
+import tempfile
 
 mlflow.set_tracking_uri(
-    "file:./mlruns"
+    f"file:{tempfile.gettempdir()}/mlruns"
 )
