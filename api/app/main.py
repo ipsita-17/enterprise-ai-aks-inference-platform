@@ -1,15 +1,24 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import joblib
+from fastapi.responses import Response
 
 from prometheus_client import Counter, Histogram, generate_latest
-from fastapi.responses import Response
+
+import joblib
+import os
 
 app = FastAPI()
 
-model = joblib.load("model/artifacts/model.pkl")
+# Model Loading
 
-# Metrics
+MODEL_PATH = "model/artifacts/model.pkl"
+
+model = None
+
+if os.path.exists(MODEL_PATH):
+    model = joblib.load(MODEL_PATH)
+
+# Prometheus Metrics
 
 prediction_counter = Counter(
     "prediction_requests_total",
@@ -65,6 +74,11 @@ def metrics():
 def predict(data: IrisRequest):
 
     prediction_counter.inc()
+
+    if model is None:
+        return {
+            "error": "Model not loaded"
+        }
 
     prediction = model.predict([[
         data.sepal_length,

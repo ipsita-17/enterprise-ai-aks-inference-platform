@@ -1,7 +1,12 @@
 from fastapi.testclient import TestClient
-from api.app.main import app
+from unittest.mock import MagicMock
 
-client = TestClient(app)
+from api.app import main
+
+main.model = MagicMock()
+main.model.predict.return_value = [0]
+
+client = TestClient(main.app)
 
 
 def test_health_check():
