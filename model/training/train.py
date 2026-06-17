@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.datasets import load_iris
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
@@ -10,11 +11,11 @@ import os
 # MLflow experiment
 mlflow.set_experiment("iris-classification")
 
-# Load versioned dataset from DVC
-df = pd.read_csv("data/iris.csv")
+# Load dataset
+iris = load_iris()
 
-X = df.drop("target", axis=1)
-y = df["target"]
+X = iris.data
+y = iris.target
 
 # Train/Test split
 X_train, X_test, y_train, y_test = train_test_split(
