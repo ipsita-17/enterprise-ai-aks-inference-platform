@@ -22,6 +22,13 @@ def health_check():
     }
 
 
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy"
+    }
+
+
 @app.post("/predict")
 def predict(data: IrisRequest):
 

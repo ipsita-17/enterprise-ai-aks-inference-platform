@@ -1,42 +1,54 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: ai-inference-api
   namespace: ai-platform
+
 spec:
   replicas: {{ .Values.replicaCount }}
+
   selector:
     matchLabels:
       app: ai-api
+
   template:
     metadata:
       labels:
         app: ai-api
+
     spec:
       containers:
         - name: ai-api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+
           ports:
             - containerPort: 8000
+
           envFrom:
             - configMapRef:
                 name: ai-config
+
             - secretRef:
                 name: ai-secret
+
           resources:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
               memory: {{ .Values.resources.requests.memory }}
+
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
               memory: {{ .Values.resources.limits.memory }}
+
           livenessProbe:
             httpGet:
               path: /health
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 5
+
           readinessProbe:
             httpGet:
               path: /health
