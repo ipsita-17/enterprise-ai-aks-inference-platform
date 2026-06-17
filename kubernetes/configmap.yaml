@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: ai-config
+  namespace: ai-platform
+
+data:
+  APP_NAME: "AI Inference API"
+  LOG_LEVEL: "INFO"
