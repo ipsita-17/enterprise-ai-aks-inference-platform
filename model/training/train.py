@@ -54,10 +54,10 @@ with mlflow.start_run():
     )
 
     # Log model
-    mlflow.sklearn.log_model(
-        model,
-        "model"
-    )
+    # mlflow.sklearn.log_model(
+    #     model,
+    #     "model"
+    # )
 
     print(f"Accuracy: {accuracy}")
 
