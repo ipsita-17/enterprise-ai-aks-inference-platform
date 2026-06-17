@@ -1,0 +1,10 @@
+stages:
+  train:
+    cmd: python model/training/train.py
+
+    deps:
+      - data/iris.csv
+      - model/training/train.py
+
+    outs:
+      - model/artifacts/model.pkl

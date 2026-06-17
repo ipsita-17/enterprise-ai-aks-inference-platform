@@ -1,4 +1,4 @@
-from sklearn.datasets import load_iris
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
@@ -10,11 +10,11 @@ import os
 # MLflow experiment
 mlflow.set_experiment("iris-classification")
 
-# Load dataset
-iris = load_iris()
+# Load versioned dataset from DVC
+df = pd.read_csv("data/iris.csv")
 
-X = iris.data
-y = iris.target
+X = df.drop("target", axis=1)
+y = df["target"]
 
 # Train/Test split
 X_train, X_test, y_train, y_test = train_test_split(
@@ -35,16 +35,24 @@ with mlflow.start_run():
 
     accuracy = model.score(X_test, y_test)
 
+    # Log parameters
     mlflow.log_param(
         "n_estimators",
         100
     )
 
+    mlflow.log_param(
+        "test_size",
+        0.2
+    )
+
+    # Log metrics
     mlflow.log_metric(
         "accuracy",
         accuracy
     )
 
+    # Log model
     mlflow.sklearn.log_model(
         model,
         "model"
@@ -55,7 +63,7 @@ with mlflow.start_run():
 # Create artifacts folder
 os.makedirs("model/artifacts", exist_ok=True)
 
-# Save model
+# Save model locally
 joblib.dump(
     model,
     "model/artifacts/model.pkl"
