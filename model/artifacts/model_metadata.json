@@ -1,0 +1,7 @@
+{
+  "model_name": "iris-classifier",
+  "version": "1.0.0",
+  "accuracy": 1.0,
+  "algorithm": "RandomForestClassifier",
+  "trained_on": "2026-06-17"
+}

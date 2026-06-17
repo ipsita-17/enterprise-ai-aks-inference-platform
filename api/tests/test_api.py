@@ -1,11 +1,23 @@
 from fastapi.testclient import TestClient
-from app.main import app
+from api.app.main import app
 
 client = TestClient(app)
+
 
 def test_health_check():
     response = client.get("/")
     assert response.status_code == 200
+
+
+def test_health():
+    response = client.get("/health")
+    assert response.status_code == 200
+
+
+def test_version():
+    response = client.get("/version")
+    assert response.status_code == 200
+
 
 def test_predict():
     response = client.post(

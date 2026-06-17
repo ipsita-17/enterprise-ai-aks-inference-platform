@@ -44,6 +44,14 @@ def health():
     }
 
 
+@app.get("/version")
+def version():
+    return {
+        "model": "iris-classifier",
+        "version": "1.0.0"
+    }
+
+
 @app.get("/metrics")
 def metrics():
     return Response(
