@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
       - name: Install Dependencies
         run: |
@@ -28,8 +29,10 @@ jobs:
 
       - name: Run Tests
         run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/api
-          pytest --cov=api/app --cov-report=xml:coverage.xml
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          pytest api/tests \
+            --cov=api/app \
+            --cov-report=xml:coverage.xml
 
       - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
@@ -43,6 +46,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Download Coverage Report
         uses: actions/download-artifact@v4
@@ -53,9 +58,6 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.python.coverage.reportPaths=coverage.xml
 
   train:
     needs: sonar
@@ -68,6 +70,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
       - name: Install Dependencies
         run: |
@@ -82,6 +85,7 @@ jobs:
         with:
           name: mlflow-runs
           path: mlruns/
+          if-no-files-found: warn
 
   trivy:
     needs: train
@@ -91,7 +95,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Trivy Security Scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: fs
           scan-ref: .
@@ -103,11 +107,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build Docker Image
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Image
         run: |
-          docker build -t ai-inference-api:v1 .
+          docker build -t ipsuuu/ai-inference-api:${{ github.sha }} .
+          docker tag ipsuuu/ai-inference-api:${{ github.sha }} ipsuuu/ai-inference-api:latest
 
       - name: Scan Docker Image
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: ai-inference-api:v1
+          image-ref: ipsuuu/ai-inference-api:${{ github.sha }}
+
+      - name: Push Image
+        run: |
+          docker push ipsuuu/ai-inference-api:${{ github.sha }}
+          docker push ipsuuu/ai-inference-api:latest
