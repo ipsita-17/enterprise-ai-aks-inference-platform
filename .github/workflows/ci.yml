@@ -24,11 +24,18 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r model/training/requirements.txt
+          pip install pytest pytest-cov
 
       - name: Run Tests
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/api
-          pytest
+          pytest --cov=api/app --cov-report=xml:coverage.xml
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
 
   sonar:
     needs: test
@@ -37,10 +44,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.python.coverage.reportPaths=coverage.xml
 
   train:
     needs: sonar
