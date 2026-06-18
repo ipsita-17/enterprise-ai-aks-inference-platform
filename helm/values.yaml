@@ -1,9 +1,9 @@
 replicaCount: 2
 
 image:
-  repository: ai-inference-api
-  tag: v1
-  pullPolicy: IfNotPresent
+  repository: ipsuuu/ai-inference-api
+  tag: v2
+  pullPolicy: Always
 
 service:
   type: LoadBalancer
